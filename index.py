@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
-from repository import SocialDataRepository
+from services import SocialDataService
 from flask import Flask, request
 import json
 
 
 app = Flask(__name__)
-app.config['DEBUG'] = True
 
-@app.route("/read", methods=['GET'])
-def readTweet():
-    TwitterRepository.readTweet()
-    return ('', 204)
+@app.route("/socialdata/data", methods=['GET'])
+def getSocialData():
+    start = request.args.get('start')
+    end = request.args.get('end')
+    data = SocialDataService.getSocialData(start, end)
+    return data
+
+@app.route("/query", methods=['GET'])
+def getAllQuery():
+    data = SocialDataService.getAllQuery()
+    return data
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0',port=5005, threaded=True)
