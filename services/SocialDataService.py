@@ -15,7 +15,7 @@ sc = spark.sparkContext
 
 
 def getSocialData(start, end):
-    socialDataParquet = "SOCIALDATA.parquet"
+    socialDataParquet = "../SocialDataRepository/SOCIALDATA.parquet"
     socialDataDF = spark.read.parquet(socialDataParquet)
     socialDataDF = socialDataDF.sort(socialDataDF.created_at.desc())
     socialData = socialDataDF.where(start >= socialDataDF.created_at).where(socialDataDF.created_at <= end).collect()
@@ -26,8 +26,8 @@ def getSocialData(start, end):
 
 
 def getAllQuery():
-    queryParquet = "SOCIALDATA.parquet"
-    queryDF = spark.read.parquet(socialDataParquet)
+    queryParquet = "../SocialDataRepository/QUERY.parquet"
+    queryDF = spark.read.parquet(queryParquet)
     queries = queryDF.collect()
     q_list = []
     for q in queries:
