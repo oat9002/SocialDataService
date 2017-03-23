@@ -33,3 +33,10 @@ def getAllQuery():
     for q in queries:
         q_list.append(q.asDict())
     return q_list
+
+def getPlaceById(place_id):
+    placeParquet = "../SocialDataRepository/PLACE.parquet"
+    placeDF = spark.read.parquet(placeParquet)
+    place = placeDF.where(placeDF.id == place_id).collect()
+    place = place[0].asDict()
+    return place
