@@ -4,6 +4,7 @@ from pyspark.sql import *
 from pyspark.sql.types import *
 import dateutil.parser as date
 import json
+from pymongo import MongoClient 
 
 
 spark = SparkSession\
@@ -24,7 +25,6 @@ def getSocialData(start, end):
         sd_list.append(sd.asDict())
     return sd_list
 
-
 def getAllQuery():
     queryParquet = "../SocialDataRepository/QUERY.parquet"
     queryDF = spark.read.parquet(queryParquet)
@@ -40,3 +40,22 @@ def getPlaceById(place_id):
     place = placeDF.where(placeDF.id == place_id).collect()
     place = place[0].asDict()
     return place
+
+def get_predicted():
+    client = MongoClient('mongodb://10.0.1.3:27017/')
+    db = client['SocialData']
+    predicted_collection = db.predicted
+    predicted = predicted_collection.find().sort("_id", -1).limit(1)
+    for p in predicted:
+        predicted = p
+    del predicted['_id']
+    return predicted
+
+def get_predicted_sample_text(predicted_id):
+    client = MongoClient('mongodb://10.0.1.3:27017/')
+    db = client['SocialData']
+    predicted_collection = db.predicted_tweets
+    sample_texts = predicted_collection.find({'predicted_id': predicted_id})
+    for samp_inst in sample_texts:
+        del samp_inst['_id']
+        return samp_inst

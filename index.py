@@ -28,5 +28,19 @@ def getPlaceById():
     place['place'] = SocialDataService.getPlaceById(place_id)
     return jsonify(place)
 
+@app.route("/sample_text", methods=['GET'])
+def getSampleText():
+    predicted_id = request.args.get('predicted_id')
+    samp_tweets = {}
+    samp_tweets['predicted_tweets'] = SocialDataService.get_predicted_sample_text(predicted_id)
+    return jsonify(samp_tweets)
+
+@app.route("/predicted", methods=['GET'])
+def get_predicted():
+   predicted = {}
+   predicted['predicted'] = SocialDataService.get_predicted();
+   return jsonify(predicted) 
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=5005, threaded=True)
