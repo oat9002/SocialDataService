@@ -9,14 +9,16 @@ from pymongo import MongoClient
 
 spark = SparkSession\
     .builder\
+    .master("spark://stack-02:7077")\
+    .config("spark.cores.max", 2)\
     .appName("SocialDataService")\
     .getOrCreate()
 
 sc = spark.sparkContext
 
 
-def getSocialData(start, end):
-    socialDataParquet = "../SocialDataRepository/SOCIALDATA.parquet"
+def getSocialDataByStartAndEnd(start, end):
+    socialDataParquet = "hdfs://stack-02:9000/SocialDataRepository/SOCIALDATA.parquet"
     socialDataDF = spark.read.parquet(socialDataParquet)
     socialDataDF = socialDataDF.sort(socialDataDF.created_at.desc())
     socialData = socialDataDF.where(start >= socialDataDF.created_at).where(socialDataDF.created_at <= end).collect()
@@ -25,8 +27,17 @@ def getSocialData(start, end):
         sd_list.append(sd.asDict())
     return sd_list
 
+def getAllSocialData():
+    socialDataParquet = "hdfs://stack-02:9000/SocialDataRepository/SOCIALDATA.parquet"
+    socialDataDF = spark.read.parquet(socialDataParquet)
+    socialData = socialDataDF.collect()
+    sd_list = []
+    for sd in socialData:
+        sd_list.append(sd.asDict())
+    return sd_list
+
 def getAllQuery():
-    queryParquet = "../SocialDataRepository/QUERY.parquet"
+    queryParquet = "hdfs://stack-02:9000/SocialDataRepository/QUERY.parquet"
     queryDF = spark.read.parquet(queryParquet)
     queries = queryDF.collect()
     q_list = []
@@ -35,7 +46,8 @@ def getAllQuery():
     return q_list
 
 def getPlaceById(place_id):
-    placeParquet = "../SocialDataRepository/PLACE.parquet"
+    # placeParquet = "../SocialDataRepository/PLACE.parquet"
+    placeParquet = "hdfs://stack-02:9000/SocialDataRepository/PLACE.parquet"
     placeDF = spark.read.parquet(placeParquet)
     place = placeDF.where(placeDF.id == place_id).collect()
     place = place[0].asDict()

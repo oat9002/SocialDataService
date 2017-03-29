@@ -5,11 +5,18 @@ import json
 
 app = Flask(__name__)
 
-@app.route("/socialdata/data", methods=['GET'])
-def getSocialData():
+@app.route("/socialdata/date", methods=['GET'])
+def getSocialDataByStartAndEnd():
     start = request.args.get('start')
     end = request.args.get('end')
-    data = SocialDataService.getSocialData(start, end)
+    data = SocialDataService.getSocialDataByStartAndEnd(start, end)
+    socials = {}
+    socials['socials'] = data
+    return jsonify(socials)
+
+@app.route("/socialdata/", methods=['GET'])
+def getAllSocialData():
+    data = SocialDataService.getAllSocialData()
     socials = {}
     socials['socials'] = data
     return jsonify(socials)
@@ -32,7 +39,7 @@ def getPlaceById():
 def getSampleText():
     predicted_id = request.args.get('predicted_id')
     samp_tweets = {}
-    samp_tweets['predicted_tweets'] = SocialDataService.get_predicted_sample_text(predicted_id)
+    samp_tweets['predicted_texts'] = SocialDataService.get_predicted_sample_text(predicted_id)
     return jsonify(samp_tweets)
 
 @app.route("/predicted", methods=['GET'])
