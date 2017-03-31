@@ -2,3 +2,5 @@
 \.vscode/
 
 deployment-config\.json
+
+\.idea/

@@ -27,6 +27,17 @@ def getSocialDataByStartAndEnd(start, end):
         sd_list.append(sd.asDict())
     return sd_list
 
+def getTweetDataByStartAndEnd(start, end):
+    client = MongoClient('mongodb://10.0.1.3:27017/')
+    db = client['SocialData']
+    tweet_collection = db.tweet
+    tweets = tweet_collection.find({"created_at": {"$gte": date.parse(start), "$lte": date.parse(end)}})
+    tw_list = []
+    for tw in tweets:
+        del tw['_id']
+        tw_list.append(tw)
+    return tw_list
+
 def getAllSocialData():
     socialDataParquet = "hdfs://stack-02:9000/SocialDataRepository/SOCIALDATA.parquet"
     socialDataDF = spark.read.parquet(socialDataParquet)
@@ -63,11 +74,9 @@ def get_predicted():
     del predicted['_id']
     return predicted
 
-def get_predicted_sample_text(predicted_id):
+def save_predicted(predicted):
     client = MongoClient('mongodb://10.0.1.3:27017/')
     db = client['SocialData']
-    predicted_collection = db.predicted_tweets
-    sample_texts = predicted_collection.find({'predicted_id': predicted_id})
-    for samp_inst in sample_texts:
-        del samp_inst['_id']
-        return samp_inst
+    predicted_collection = db.predicted
+    result = predicted_collection.insert_one({'id': predicted['id'], 'predicted': predicted['predicted']}).inserted_id
+    return result
