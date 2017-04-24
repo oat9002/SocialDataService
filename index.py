@@ -6,6 +6,10 @@ import datetime
 
 app = Flask(__name__)
 
+@app.route("/", methods=['GET'])
+def index():
+    return "SocialDataService"
+
 @app.route("/socialdata/date", methods=['GET'])
 def getSocialDataByStartAndEnd():
     start = request.args.get('start')
